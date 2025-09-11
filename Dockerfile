@@ -4,7 +4,8 @@ FROM python:3.10-slim
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV PORT=5000  # Define PORT environment variable
+ENV PORT=5000 
+# Define PORT environment variable
 
 # Set working directory
 WORKDIR /app
