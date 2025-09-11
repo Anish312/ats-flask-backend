@@ -10,4 +10,4 @@ nltk
 unidecode==1.3.7
 sentence-transformers==2.2.2
 huggingface-hub==0.15.1
-textblob
+textblob==0.17.1  
