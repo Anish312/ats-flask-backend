@@ -1,28 +1,33 @@
-# Use slim Python image
+# Use slim Python base image
 FROM python:3.10-slim
 
 # Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-# Define PORT environment variable
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
 # Set working directory
 WORKDIR /app
 
-# Install dependencies from requirements.txt
+# Install minimal system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements first for layer caching
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
 
-# Install CPU-only torch separately if not included in requirements.txt
-RUN pip install --no-cache-dir torch==2.3.1+cpu --index-url https://download.pytorch.org/whl/cpu
+# Install dependencies in one layer & clean cache
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt \
+    && pip install --no-cache-dir torch==2.3.1+cpu --index-url https://download.pytorch.org/whl/cpu
 
-# Download NLTK corpora (optional: can do at runtime to reduce image size)
-RUN python -m nltk.downloader punkt stopwords wordnet
+# Download SpaCy + NLTK models in same layer, then clean up cache
+RUN python -m spacy download en_core_web_sm \
+    && python -m nltk.downloader punkt stopwords wordnet \
+    && rm -rf /root/.cache/*
 
-# Download SpaCy English model
-RUN python -m spacy download en_core_web_sm
-
-# Copy app code
+# Copy app code last (to avoid cache busting on every code change)
 COPY . .
 
 # Expose Render port
