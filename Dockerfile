@@ -4,7 +4,6 @@ FROM python:3.10-slim
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV PORT=5000 
 # Define PORT environment variable
 
 # Set working directory
@@ -30,4 +29,4 @@ COPY . .
 EXPOSE 5000
 
 # Start FastAPI app
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "${PORT}"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "5000"]
