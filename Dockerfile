@@ -8,8 +8,11 @@ ENV PYTHONUNBUFFERED=1
 # Set working directory
 WORKDIR /app
 
-# Copy requirements first (leverages Docker cache)
-COPY requirements.txt .
+# Install dependencies from requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install CPU-only torch separately
+RUN pip install --no-cache-dir torch==2.3.1+cpu --index-url https://download.pytorch.org/whl/cpu
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
