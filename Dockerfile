@@ -5,9 +5,18 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Download spaCy model
-RUN python -m spacy download en_core_web_sm
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Download NLTK corpora
 RUN python -m nltk.downloader punkt stopwords wordnet
+
+# Download TextBlob corpora
+RUN python -m textblob.download_corpora
+
+# Download SpaCy English model
+RUN python -m spacy download en_core_web_sm
 
 COPY . .
 
