@@ -7,6 +7,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Download spaCy model
 RUN python -m spacy download en_core_web_sm
+RUN python -m nltk.downloader punkt stopwords wordnet
 
 COPY . .
 
