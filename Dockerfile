@@ -8,7 +8,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # Set working directory
 WORKDIR /app
 
-# Install minimal system dependencies
+# Install minimal system dependencies (only what's needed)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     curl \
@@ -17,20 +17,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy requirements first for layer caching
 COPY requirements.txt .
 
-# Install dependencies in one layer & clean cache
+# Install dependencies in one layer & clean pip cache
 RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt \
-    && pip install --no-cache-dir torch==2.3.1+cpu --index-url https://download.pytorch.org/whl/cpu
+    && pip install --no-cache-dir -r requirements.txt
 
-# Download SpaCy + NLTK models in same layer, then clean up cache
+# Download SpaCy + NLTK models in same layer
 RUN python -m spacy download en_core_web_sm \
     && python -m nltk.downloader punkt stopwords wordnet \
     && rm -rf /root/.cache/*
 
-# Copy app code last (to avoid cache busting on every code change)
+# Copy app code last (to avoid cache busting on every change)
 COPY . .
 
-# Expose Render port
+# Expose Render/Heroku port
 EXPOSE 5000
 
 # Start FastAPI app
